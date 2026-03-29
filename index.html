@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endless Points</title>
+</head>
+<body>
+    <h1>Welcome to the Endless Points Idle Game</h1>
+    <p>In this game, you'll earn points continuously.</p>
+    <script>
+        let points = 0;
+        setInterval(() => {
+            points += 1;
+            document.getElementById('points').innerText = `Points: ${points}`;
+        }, 1000);
+    </script>
+    <div id="points">Points: 0</div>
+</body>
+</html>
