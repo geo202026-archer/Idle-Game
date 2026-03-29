@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .todo-container {
+            max-width: 400px;
+            margin: auto;
+        }
+        input[type='text'] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+            color: #000;
+        }
+        button {
+            padding: 10px;
+            background-color: #6200ea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3700b3;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #1e1e1e;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="todo-container">
+        <h1>To-Do List</h1>
+        <input type="text" id="taskInput" placeholder="Add a new task">
+        <button onclick="addTask()">Add Task</button>
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        // Load tasks from local storage
+        document.addEventListener('DOMContentLoaded', loadTasks);
+
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.forEach(task => {
+                addTaskToDOM(task);
+            });
+        }
+
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value;
+            if (!taskText) return;
+
+            const task = { text: taskText, completed: false };
+            addTaskToDOM(task);
+            saveTask(task);
+            taskInput.value = '';
+        }
+
+        function addTaskToDOM(task) {
+            const taskList = document.getElementById('taskList');
+            const li = document.createElement('li');
+            li.innerHTML = `<span class='${task.completed ? 'completed' : ''}'>${task.text}</span> <button onclick='deleteTask(this)'>Delete</button>`;
+            li.querySelector('span').addEventListener('click', () => toggleCompletion(task, li.querySelector('span')));
+            taskList.appendChild(li);
+        }
+
+        function saveTask(task) {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.push(task);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function deleteTask(button) {
+            const li = button.parentElement;
+            const taskText = li.querySelector('span').innerText;
+            li.remove();
+            removeTaskFromStorage(taskText);
+        }
+
+        function removeTaskFromStorage(taskText) {
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks = tasks.filter(task => task.text !== taskText);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function toggleCompletion(task, span) {
+            task.completed = !task.completed;
+            span.classList.toggle('completed');
+            updateTaskInStorage(task);
+        }
+
+        function updateTaskInStorage(updatedTask) {
+            let tasks = JSON.parse(localStorage.getItem('tasks'));
+            tasks = tasks.map(task =>
+                task.text === updatedTask.text ? updatedTask : task
+            );
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+    </script>
+</body>
+</html>
